@@ -1,6 +1,8 @@
 package com.example.examg6.controller;
 
 import com.example.examg6.entity.User;
+import com.example.examg6.repo.StatusRepository;
+import com.example.examg6.repo.TaskRepository;
 import com.example.examg6.service.UserService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -10,11 +12,23 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 @Controller
+
 public class UserController {
     private final UserService userService;
+    private final TaskRepository taskRepository;
+    private final StatusRepository statusRepository;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, TaskRepository taskRepository, TaskRepository taskRepository1, StatusRepository statusRepository) {
         this.userService = userService;
+        this.taskRepository = taskRepository1;
+        this.statusRepository = statusRepository;
+    }
+
+    @GetMapping("/")
+    public String index(Model model) {
+        model.addAttribute("tasks", taskRepository.findAll());
+        model.addAttribute("status", statusRepository.findAll());
+        return "index";
     }
 
     @GetMapping("/register")

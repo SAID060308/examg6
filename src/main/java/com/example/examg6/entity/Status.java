@@ -17,8 +17,7 @@ public class Status {
     private Integer id;
     private String status;
 
-    private Boolean isActive;
+    private Integer isActivePositionNumber;
 
-    @Column(unique = true)
-    private Integer positionNumber;
+    private Integer isNotActivePositionNumber;
 }
