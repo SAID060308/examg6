@@ -2,10 +2,414 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Title</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Task Management Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary-color: #6c5ce7;
+      --secondary-color: #a29bfe;
+      --accent-color: #fd79a8;
+      --light-color: #f8f9fa;
+      --dark-color: #343a40;
+      --edit-color: #00b894;
+      --left-color: #0984e3;
+      --right-color: #e17055;
+    }
+
+    body {
+      background-color: #f5f6fa;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .dashboard-header {
+      background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+      color: white;
+      padding: 20px 0;
+      margin-bottom: 30px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      border-radius: 0 0 15px 15px;
+    }
+
+    .status-column {
+      background-color: white;
+      border-radius: 15px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+      padding: 20px;
+      margin-bottom: 30px;
+      transition: all 0.3s ease;
+      border-top: 5px solid var(--primary-color);
+    }
+
+    .status-column:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    }
+
+    .status-header {
+      font-weight: 600;
+      color: var(--dark-color);
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .task-card {
+      background-color: var(--light-color);
+      border-radius: 10px;
+      padding: 0;
+      margin-bottom: 15px;
+      border-left: 4px solid var(--accent-color);
+      transition: all 0.2s ease;
+      overflow: hidden;
+    }
+
+    .task-card:hover {
+      transform: translateX(5px);
+      box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+    }
+
+    .task-image {
+      width: 100%;
+      height: 120px;
+      object-fit: cover;
+      border-bottom: 1px solid #eee;
+    }
+
+    .task-content {
+      padding: 15px;
+    }
+
+    .task-title {
+      font-weight: 600;
+      margin-bottom: 10px;
+      color: var(--dark-color);
+    }
+
+    .task-description {
+      font-size: 13px;
+      color: #666;
+      margin-bottom: 15px;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .user-img {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-right: 10px;
+      border: 2px solid white;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .user-name {
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .btn-primary-custom {
+      background-color: var(--primary-color);
+      border: none;
+      border-radius: 8px;
+      padding: 8px 15px;
+      font-weight: 500;
+    }
+
+    .btn-primary-custom:hover {
+      background-color: #5649d1;
+      transform: translateY(-2px);
+    }
+
+    .btn-accent {
+      background-color: var(--accent-color);
+      border: none;
+      border-radius: 8px;
+      padding: 8px 15px;
+      font-weight: 500;
+      color: white;
+    }
+
+    .btn-accent:hover {
+      background-color: #e84393;
+      color: white;
+      transform: translateY(-2px);
+    }
+
+    .btn-edit {
+      background-color: var(--edit-color);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 5px 10px;
+      font-size: 12px;
+    }
+
+    .btn-left {
+      background-color: var(--left-color);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 5px 10px;
+      font-size: 12px;
+    }
+
+    .btn-right {
+      background-color: var(--right-color);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 5px 10px;
+      font-size: 12px;
+    }
+
+    .btn-edit:hover, .btn-left:hover, .btn-right:hover {
+      opacity: 0.9;
+      color: white;
+      transform: translateY(-1px);
+    }
+
+    .task-actions {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 10px;
+    }
+
+    .nav-buttons {
+      display: flex;
+      gap: 10px;
+    }
+
+    .status-container {
+      display: flex;
+      gap: 20px;
+      overflow-x: auto;
+      padding-bottom: 20px;
+    }
+
+    .status-column {
+      min-width: 280px;
+    }
+  </style>
 </head>
 <body>
+<div class="dashboard-header">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-md-6">
+        <h1><i class="fas fa-tasks me-2"></i> Task Management</h1>
+      </div>
+      <div class="col-md-6 text-end">
+        <div class="nav-buttons">
+          <button class="btn btn-accent me-2">
+            <i class="fas fa-plus me-1"></i> Create Task
+          </button>
+          <button class="btn btn-primary-custom">
+            <i class="fas fa-columns me-1"></i> Add Status
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
-<h1>home</h1>
+<div class="container">
+  <div class="status-container">
+    <!-- OPEN Column -->
+    <div class="status-column">
+      <div class="status-header">
+        <span>OPEN</span>
+        <span class="badge bg-primary rounded-pill">3</span>
+      </div>
+
+      <div class="task-card">
+        <img src="https://images.unsplash.com/photo-1547658719-da2b51169166?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80" alt="Task Image" class="task-image">
+        <div class="task-content">
+          <h6 class="task-title">Design Homepage Layout</h6>
+          <p class="task-description">Create wireframes for the new homepage design</p>
+
+          <div class="user-info">
+            <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="User" class="user-img">
+            <span class="user-name">Sarah Johnson</span>
+          </div>
+
+          <div class="task-actions">
+            <button class="btn btn-edit">
+              <i class="fas fa-pencil-alt"></i> Edit
+            </button>
+            <div>
+              <button class="btn btn-left me-2">
+                <i class="fas fa-arrow-left"></i>
+              </button>
+              <button class="btn btn-right">
+                <i class="fas fa-arrow-right"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="task-card">
+        <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80" alt="Task Image" class="task-image">
+        <div class="task-content">
+          <h6 class="task-title">Database Schema</h6>
+          <p class="task-description">Design the database structure for user management</p>
+
+          <div class="user-info">
+            <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="User" class="user-img">
+            <span class="user-name">Michael Chen</span>
+          </div>
+
+          <div class="task-actions">
+            <button class="btn btn-edit">
+              <i class="fas fa-pencil-alt"></i> Edit
+            </button>
+            <div>
+              <button class="btn btn-left me-2">
+                <i class="fas fa-arrow-left"></i>
+              </button>
+              <button class="btn btn-right">
+                <i class="fas fa-arrow-right"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- IN PROGRESS Column -->
+    <div class="status-column">
+      <div class="status-header">
+        <span>IN PROGRESS</span>
+        <span class="badge bg-warning rounded-pill">2</span>
+      </div>
+
+      <div class="task-card">
+        <img src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80" alt="Task Image" class="task-image">
+        <div class="task-content">
+          <h6 class="task-title">API Development</h6>
+          <p class="task-description">Implement user authentication endpoints</p>
+
+          <div class="user-info">
+            <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="User" class="user-img">
+            <span class="user-name">Emma Wilson</span>
+          </div>
+
+          <div class="task-actions">
+            <button class="btn btn-edit">
+              <i class="fas fa-pencil-alt"></i> Edit
+            </button>
+            <div>
+              <button class="btn btn-left me-2">
+                <i class="fas fa-arrow-left"></i>
+              </button>
+              <button class="btn btn-right">
+                <i class="fas fa-arrow-right"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- COMPLETE Column -->
+    <div class="status-column">
+      <div class="status-header">
+        <span>COMPLETE</span>
+        <span class="badge bg-success rounded-pill">4</span>
+      </div>
+
+      <div class="task-card">
+        <img src="https://images.unsplash.com/photo-1542903660-eedba2cda473?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80" alt="Task Image" class="task-image">
+        <div class="task-content">
+          <h6 class="task-title">Project Setup</h6>
+          <p class="task-description">Initialize project repository and CI/CD pipeline</p>
+
+          <div class="user-info">
+            <img src="https://randomuser.me/api/portraits/men/75.jpg" alt="User" class="user-img">
+            <span class="user-name">David Miller</span>
+          </div>
+
+          <div class="task-actions">
+            <button class="btn btn-edit">
+              <i class="fas fa-pencil-alt"></i> Edit
+            </button>
+            <div>
+              <button class="btn btn-left me-2">
+                <i class="fas fa-arrow-left"></i>
+              </button>
+              <button class="btn btn-right">
+                <i class="fas fa-arrow-right"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MANAGE ORDERS Column -->
+    <div class="status-column">
+      <div class="status-header">
+        <span>MANAGE ORDERS</span>
+        <span class="badge bg-info rounded-pill">1</span>
+      </div>
+
+      <div class="task-card">
+        <img src="https://images.unsplash.com/photo-1556740738-b6a63e27c4df?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80" alt="Task Image" class="task-image">
+        <div class="task-content">
+          <h6 class="task-title">Order Processing</h6>
+          <p class="task-description">Implement order fulfillment workflow</p>
+
+          <div class="user-info">
+            <img src="https://randomuser.me/api/portraits/women/33.jpg" alt="User" class="user-img">
+            <span class="user-name">Jessica Brown</span>
+          </div>
+
+          <div class="task-actions">
+            <button class="btn btn-edit">
+              <i class="fas fa-pencil-alt"></i> Edit
+            </button>
+            <div>
+              <button class="btn btn-left me-2">
+                <i class="fas fa-arrow-left"></i>
+              </button>
+              <button class="btn btn-right">
+                <i class="fas fa-arrow-right"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  // JavaScript for adding new status columns would go here
+  document.querySelector('.btn-primary-custom').addEventListener('click', function() {
+    const statusName = prompt('Enter new status name:');
+    if (statusName) {
+      const statusContainer = document.querySelector('.status-container');
+      const newColumn = document.createElement('div');
+      newColumn.className = 'status-column';
+      newColumn.innerHTML = `
+                    <div class="status-header">
+                        <span>${statusName.toUpperCase()}</span>
+                        <span class="badge bg-secondary rounded-pill">0</span>
+                    </div>
+                    <p class="text-muted small mt-3">No tasks in this status</p>
+                `;
+      statusContainer.appendChild(newColumn);
+    }
+  });
+</script>
 </body>
 </html>
