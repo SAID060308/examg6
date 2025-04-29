@@ -17,6 +17,10 @@ public class UserController {
         this.userService = userService;
     }
 
+    @GetMapping("/login")
+    public String showLoginPage() {
+        return "login";
+    }
 
     @GetMapping("/register")
     public String showRegisterForm(Model model) {
@@ -42,6 +46,6 @@ public class UserController {
     public String verifyUser(@RequestParam String email, @RequestParam String code, Model model) {
         String response = userService.verifyUser(email, code);
         model.addAttribute("message", response);
-        return "home";
+        return "login";
     }
 }

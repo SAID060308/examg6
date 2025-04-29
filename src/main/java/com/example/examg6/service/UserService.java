@@ -11,6 +11,7 @@ import com.example.examg6.repo.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -22,7 +23,7 @@ import java.util.Random;
 @Service
 @RequiredArgsConstructor
 public class UserService {
-
+    private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final AttachmentRepository attachmentRepository;
@@ -54,7 +55,7 @@ public class UserService {
         Role role = roleRepository.findByName("PROGRAMMER")
                 .orElseGet(() -> roleRepository.save(new Role(null, "PROGRAMMER")));
         user.setRoles(Collections.singletonList(role));
-
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         // 2. Fayl saqlash
         if (file != null && !file.isEmpty()) {
             try {
