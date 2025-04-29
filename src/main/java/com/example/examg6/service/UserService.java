@@ -9,9 +9,12 @@ import com.example.examg6.repo.AttachmentRepository;
 import com.example.examg6.repo.RoleRepository;
 import com.example.examg6.repo.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.ApplicationRunner;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.InputStream;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.Random;
@@ -25,6 +28,22 @@ public class UserService {
     private final AttachmentRepository attachmentRepository;
     private final AttachmentContentRepository attachmentContentRepository;
     private final EmailService emailService;
+
+    @Bean
+    public ApplicationRunner initDefaultImage(AttachmentRepository attachmentRepository, AttachmentContentRepository contentRepository) {
+        return args -> {
+            if (!attachmentRepository.existsByFileName("default.jpg")) {
+                InputStream is = getClass().getResourceAsStream("/static/files/default.jpg");
+                byte[] bytes = is.readAllBytes();
+                Attachment attachment = new Attachment(null, "default.jpg", "image/jpeg");
+                attachmentRepository.save(attachment);
+
+                AttachmentContent content = new AttachmentContent(null, attachment, bytes);
+                contentRepository.save(content);
+            }
+        };
+    }
+
 
     public String registerUser(User user, MultipartFile file) {
         if (userRepository.findByEmail(user.getEmail()).isPresent()) {
@@ -55,6 +74,10 @@ public class UserService {
             } catch (Exception e) {
                 return "Rasmni saqlashda xatolik: " + e.getMessage();
             }
+        }else {
+            // default rasmni biriktirish
+            Optional<Attachment> defaultImage = attachmentRepository.findByFileName("default.jpg");
+            defaultImage.ifPresent(user::setAttachment);
         }
 
         // 3. Tasdiqlash kodi yaratish
