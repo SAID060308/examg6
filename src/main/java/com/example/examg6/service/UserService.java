@@ -4,29 +4,27 @@ import com.example.examg6.entity.Role;
 import com.example.examg6.entity.User;
 import com.example.examg6.entity.attachment.Attachment;
 import com.example.examg6.entity.attachment.AttachmentContent;
-import com.example.examg6.entity.repo.AttachmentContentRepository;
-import com.example.examg6.entity.repo.AttachmentRepository;
-import com.example.examg6.entity.repo.RoleRepository;
-import com.example.examg6.entity.repo.UserRepository;
+import com.example.examg6.repo.AttachmentContentRepository;
+import com.example.examg6.repo.AttachmentRepository;
+import com.example.examg6.repo.RoleRepository;
+import com.example.examg6.repo.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Collections;
+import java.util.Optional;
+import java.util.Random;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
+
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final AttachmentRepository attachmentRepository;
     private final AttachmentContentRepository attachmentContentRepository;
-
-    public UserService(UserRepository userRepository, RoleRepository roleRepository, AttachmentRepository attachmentRepository, AttachmentContentRepository attachmentContentRepository) {
-        this.userRepository = userRepository;
-        this.roleRepository = roleRepository;
-        this.attachmentRepository = attachmentRepository;
-        this.attachmentContentRepository = attachmentContentRepository;
-    }
-
+    private final EmailService emailService;
 
     public String registerUser(User user, MultipartFile file) {
         if (userRepository.findByEmail(user.getEmail()).isPresent()) {
@@ -59,9 +57,23 @@ public class UserService {
             }
         }
 
+        // 3. Tasdiqlash kodi yaratish
+        String verifyCode = String.format("%04d", new Random().nextInt(10000));
+        user.setVerifiedCode(verifyCode);
+        userRepository.save(user);
 
+        emailService.sendEmail(user.getEmail(), "Tasdiqlash kodi", "Sizning kodingiz: " + verifyCode);
         return "Ro'yxatdan o'tdingiz! Email tasdiqlash kod yuborildi.";
     }
 
-
+    public String verifyUser(String email, String code) {
+        Optional<User> optionalUser = userRepository.findByEmailAndVerifiedCode(email, code);
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            user.setVerifiedCode(null); // verified
+            userRepository.save(user);
+            return "Tasdiqlash muvaffaqiyatli bajarildi!";
+        }
+        return "Noto‘g‘ri kod yoki email!";
+    }
 }

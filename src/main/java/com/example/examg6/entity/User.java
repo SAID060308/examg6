@@ -30,6 +30,8 @@ public class User  {
     @ManyToOne(fetch = FetchType.EAGER)
     Attachment attachment;
     @Transient
-    private String verified_code;
+    @Column(name = "verified_code")
+    private String verifiedCode;
+
 
 }

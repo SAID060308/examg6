@@ -32,4 +32,16 @@ public class UserController {
         model.addAttribute("message", response);
         return "verify";
     }
+
+    @GetMapping("/verify")
+    public String showVerifyForm() {
+        return "verify";
+    }
+
+    @PostMapping("/verify")
+    public String verifyUser(@RequestParam String email, @RequestParam String code, Model model) {
+        String response = userService.verifyUser(email, code);
+        model.addAttribute("message", response);
+        return "home";
+    }
 }
