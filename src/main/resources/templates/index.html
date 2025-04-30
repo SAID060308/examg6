@@ -248,14 +248,21 @@
               <i class="fas fa-pencil-alt"></i> Edit
             </button>
             <div>
-              <button class="btn btn-left me-2"
-                      th:if="${status.isActivePositionNumber > 1}">
-                <i class="fas fa-arrow-left"></i>
-              </button>
-              <button class="btn btn-right"
-                      th:if="${status.isActivePositionNumber < statuses.size()}">
-                <i class="fas fa-arrow-right"></i>
-              </button>
+              <form th:action="@{/task/changeStatusMinus/{taskId}(taskId=${task.id})}" method="post">
+                <button class="btn btn-left me-2"
+                        th:if="${task.status.isActivePositionNumber > 1}">
+                  <i class="fas fa-arrow-left"></i>
+                </button>
+              </form>
+
+              <form th:action="@{/task/changeStatusPlus/{taskId}(taskId=${task.id})}" method="post">
+                <input type="hidden" name="direction" value="next"/>
+                <button class="btn btn-right"
+                        th:if="${task.status.isActivePositionNumber < statuses.size()}">
+                  <i class="fas fa-arrow-right"></i>
+                </button>
+              </form>
+
             </div>
           </div>
         </div>
