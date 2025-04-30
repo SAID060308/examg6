@@ -51,12 +51,12 @@ public class UserService {
             return "Email already exists!";
         }
 
-        // 1. ROLE biriktirish
+        // Save role
         Role role = roleRepository.findByName("PROGRAMMER")
                 .orElseGet(() -> roleRepository.save(new Role(null, "PROGRAMMER")));
         user.setRoles(Collections.singletonList(role));
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        // 2. Fayl saqlash
+        // Save photo
         if (file != null && !file.isEmpty()) {
             try {
                 Attachment attachment = Attachment.builder()
@@ -75,13 +75,13 @@ public class UserService {
             } catch (Exception e) {
                 return "Rasmni saqlashda xatolik: " + e.getMessage();
             }
-        }else {
-            // default rasmni biriktirish
+        } else {
+            // default photo
             Optional<Attachment> defaultImage = attachmentRepository.findByFileName("default.jpg");
             defaultImage.ifPresent(user::setAttachment);
         }
 
-        // 3. Tasdiqlash kodi yaratish
+
         String verifyCode = String.format("%04d", new Random().nextInt(10000));
         user.setVerifiedCode(verifyCode);
         userRepository.save(user);
@@ -90,11 +90,11 @@ public class UserService {
         return "Ro'yxatdan o'tdingiz! Email tasdiqlash kod yuborildi.";
     }
 
-    public String verifyUser(String email, String code) {
-        Optional<User> optionalUser = userRepository.findByEmailAndVerifiedCode(email, code);
+    public String verifyUser(String code) {
+        Optional<User> optionalUser = userRepository.findByVerifiedCode(code);
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
-            user.setVerifiedCode(null); // verified
+            user.setVerifiedCode(null);
             userRepository.save(user);
             return "Tasdiqlash muvaffaqiyatli bajarildi!";
         }

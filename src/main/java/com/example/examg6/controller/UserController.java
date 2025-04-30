@@ -52,8 +52,8 @@ public class UserController {
     }
 
     @PostMapping("/verify")
-    public String verifyUser(@RequestParam String email, @RequestParam String code, Model model) {
-        String response = userService.verifyUser(email, code);
+    public String verifyUser( @RequestParam String code, Model model) {
+        String response = userService.verifyUser(code);
         model.addAttribute("message", response);
         return "login";
     }

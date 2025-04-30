@@ -18,10 +18,6 @@
           <div th:if="${message}" class="alert alert-info mb-4" th:text="${message}"></div>
 
           <form th:action="@{/verify}" method="post">
-            <div class="mb-3">
-              <label for="email" class="form-label">Email</label>
-              <input type="email" class="form-control" id="email" name="email" required>
-            </div>
 
             <div class="mb-4">
               <label for="code" class="form-label">Tasdiqlash kodi</label>
