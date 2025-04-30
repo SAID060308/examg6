@@ -27,9 +27,10 @@ public class UserController {
     @GetMapping("/")
     public String index(Model model) {
         model.addAttribute("tasks", taskRepository.findAll());
-        model.addAttribute("status", statusRepository.findAll());
+        model.addAttribute("statuses", statusRepository.findByIsActivePositionNumberNotNullOrderByIsActivePositionNumberAsc());
         return "index";
     }
+
 
     @GetMapping("/register")
     public String showRegisterForm(Model model) {

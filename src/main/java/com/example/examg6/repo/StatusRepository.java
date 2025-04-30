@@ -9,5 +9,7 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface StatusRepository extends JpaRepository<Status, Integer> {
+    List<Status> findByIsActivePositionNumberNotNullOrderByIsActivePositionNumberAsc();
+
 
 }
