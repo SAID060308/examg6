@@ -100,4 +100,7 @@ public class UserService {
         }
         return "Noto‘g‘ri kod yoki email!";
     }
+    public boolean hasAdminRole(User user) {
+        return user.getRoles().stream().anyMatch(r -> "ADMIN".equals(r.getName()));
+    }
 }

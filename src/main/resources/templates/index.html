@@ -96,25 +96,73 @@
             margin-bottom: 15px;
         }
 
-        .user-info {
-            display: flex;
-            align-items: center;
-            margin-bottom: 15px;
+        .user-profile-dropdown {
+            position: relative;
+            display: inline-block;
         }
 
-        .user-img {
-            width: 32px;
-            height: 32px;
+        .user-profile-menu {
+            display: none;
+            position: absolute;
+            right: 0;
+            background-color: white;
+            min-width: 200px;
+            box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
+            z-index: 1;
+            border-radius: 8px;
+            padding: 10px;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .user-profile-dropdown:hover .user-profile-menu {
+            display: block;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             object-fit: cover;
-            margin-right: 10px;
             border: 2px solid white;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
         }
 
-        .user-name {
-            font-size: 13px;
+        .dropdown-item {
+            display: block;
+            padding: 8px 16px;
+            color: #333;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .dropdown-item:hover {
+            background-color: #f8f9fa;
+            border-radius: 4px;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-header .row {
+                flex-direction: column;
+            }
+            .dashboard-header .col-md-6 {
+                width: 100%;
+                text-align: center !important;
+                margin-bottom: 15px;
+            }
+            .nav-buttons {
+                justify-content: center;
+            }
+        }
+
+        .user-name-display {
             font-weight: 500;
+            color: white;
+            margin-right: 10px;
         }
 
         .btn-primary-custom {
@@ -145,7 +193,6 @@
             transform: translateY(-2px);
         }
 
-
         .btn-edit {
             background-color: var(--edit-color);
             color: white;
@@ -163,7 +210,6 @@
             padding: 5px 10px;
             font-size: 12px;
         }
-
 
         .btn-right {
             background-color: var(--right-color);
@@ -201,6 +247,41 @@
         .status-column {
             min-width: 280px;
         }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .user-img {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 8px;
+        }
+
+        .user-name {
+            font-size: 14px;
+            color: #555;
+        }
+
+        .news-section {
+            background-color: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .news-title {
+            font-weight: 600;
+            color: var(--dark-color);
+            margin-bottom: 15px;
+            border-bottom: 2px solid var(--secondary-color);
+            padding-bottom: 10px;
+        }
     </style>
 </head>
 <body>
@@ -212,54 +293,82 @@
                 <h1><i class="fas fa-tasks me-2"></i> Task Management</h1>
             </div>
             <div class="col-md-6 text-end">
-                <div class="nav-buttons">
-                    <a href="/task/add" class="btn btn-accent me-2">
-                        <i class="fas fa-plus me-1"></i> Create Task
-                    </a>
-                    <a href="/task/add-status" class="btn btn-primary-custom">
-                        <i class="fas fa-columns me-1"></i> Add Status
-                    </a>
-                </div>
-            </div>
-        </div>
-        <div class="user-profile-card-mini">
-            <div class="d-flex align-items-center">
-                <img th:if="${user != null}" th:src="@{'/api/attachments/' + ${user.attachment.id}}" alt="User"/>
-                <div th:if="${user != null}" class="ms-2">
-                    <span th:text="${user.username}">Username</span>
-                    <form th:action="@{/logout}" method="post" class="d-inline">
-                        <button type="submit" class="btn btn-sm btn-outline-light">Logout</button>
-                    </form>
-                </div>
-                <div th:unless="${user != null}" class="ms-2">
-                    <a href="/login" class="btn btn-sm btn-light">Login</a>
-                    <a href="/register" class="btn btn-sm btn-light">Register</a>
+                <div class="d-flex align-items-center justify-content-end">
+                    <!-- User Profile Dropdown -->
+                    <div class="user-profile-dropdown ms-3" th:if="${user != null}">
+                        <div class="d-flex align-items-center">
+                            <span class="user-name-display" th:text="${user.username}"></span>
+                            <img th:if="${user.attachment != null}" th:src="@{'/api/attachments/' + ${user.attachment.id}}"
+                                 alt="User profile image"
+                                 class="user-avatar">
+                            <img th:if="${user.attachment == null}" src="/static/files/default.jpg"
+                                 alt="Default user image"
+                                 class="user-avatar">
+                        </div>
+                        <div class="user-profile-menu">
+                            <div th:if="${@userService.hasAdminRole(user)}">
+                                <a href="/admin/users" class="dropdown-item">
+                                    <i class="fas fa-users me-2"></i> Manage Users
+                                </a>
+                            </div>
+                            <a href="/profile" class="dropdown-item">
+                                <i class="fas fa-user-cog me-2"></i> My Profile
+                            </a>
+                            <form th:action="@{/logout}" method="post">
+                                <button type="submit" class="dropdown-item" style="background: none; border: none; width: 100%; text-align: left;">
+                                    <i class="fas fa-sign-out-alt me-2"></i> Logout
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Login/Register Buttons for non-authenticated users -->
+                    <div th:unless="${user != null}" class="nav-buttons">
+                        <a href="/register" class="btn btn-outline-light me-2">
+                            <i class="fas fa-user-plus me-1"></i> Register
+                        </a>
+                        <a href="/login" class="btn btn-light">
+                            <i class="fas fa-sign-in-alt me-1"></i> Login
+                        </a>
+                    </div>
+
+                    <!-- Task Management Buttons -->
+                    <div class="nav-buttons ms-3">
+                        <a href="/task/add" class="btn btn-accent me-2">
+                            <i class="fas fa-plus me-1"></i> Create Task
+                        </a>
+                        <a href="/task/add-status" class="btn btn-primary-custom">
+                            <i class="fas fa-columns me-1"></i> Add Status
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-
 </div>
 
 <div class="container">
     <div class="status-container">
-        <!-- OPEN Column -->
+        <!-- Status Columns -->
         <div th:each="status:${statuses}" class="status-column">
             <div class="status-header">
                 <span th:text="${status.getStatus()}"></span>
                 <span class="badge bg-primary rounded-pill" th:text="${status.getIsActivePositionNumber()}"></span>
             </div>
 
+            <!-- Tasks for each status -->
             <div th:each="task : ${tasks}" th:if="${task.status.id == status.id}" class="task-card">
                 <img th:if="${task.attachment != null}" th:src="@{'/api/attachments/' + ${task.attachment.id}}"
                      alt="Task Image" class="task-image">
-
 
                 <div class="task-content">
                     <h6 class="task-title" th:text="${task.title}">Task Title</h6>
 
                     <div class="user-info" th:if="${task.user != null}">
-                        <img th:src="@{'/api/attachments/' + ${task.user.attachment.id}}" alt="User" class="user-img">
+                        <img th:if="${task.user.attachment != null}" th:src="@{'/api/attachments/' + ${task.user.attachment.id}}"
+                             alt="User" class="user-img">
+                        <img th:if="${task.user.attachment == null}" src="/static/files/default.jpg"
+                             alt="User" class="user-img">
                         <span class="user-name" th:text="${task.user.username}">User Name</span>
                     </div>
 
@@ -286,17 +395,20 @@
                                     <i class="fas fa-arrow-right"></i>
                                 </button>
                             </form>
-
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- News Section -->
+    <div class="news-section">
+        <h5 class="news-title">New for you</h5>
+        <p>Tokyo stocks rise on weaker yen, US tech gains...</p>
+    </div>
 </div>
 
-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
 </body>
 </html>
