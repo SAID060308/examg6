@@ -8,6 +8,7 @@ import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Data
@@ -22,6 +23,6 @@ public class Comment {
     @ManyToOne
     private User user;
     @CreationTimestamp
-    private LocalDate creationDate;
+    private LocalDateTime creationDate;
     private String comment;
 }

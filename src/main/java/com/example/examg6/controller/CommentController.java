@@ -11,7 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Controller
@@ -45,7 +45,7 @@ public class CommentController {
         newComment.setComment(comment);
         newComment.setUser(user.get());
 
-        newComment.setCreationDate(LocalDate.now());
+        newComment.setCreationDate(LocalDateTime.now());
         commentRepository.save(newComment);
         assert task != null;
         task.getComments().add(newComment);
