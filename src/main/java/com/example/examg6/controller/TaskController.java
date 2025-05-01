@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 
 @Controller
@@ -42,6 +43,31 @@ public class TaskController {
         taskService.save(taskDto, file);
         return "redirect:/";
     }
+
+    @GetMapping("/task/add-status")
+    public String addStatus(){
+        return "add-status";
+    }
+
+    @PostMapping("/status/save")
+    public String saveStatus(@RequestParam String status,
+                             @RequestParam String positionType) {
+        Status newStatus = new Status();
+        newStatus.setStatus(status);
+        List<Status> activeStatuses = statusRepository.findByIsActivePositionNumberNotNullOrderByIsActivePositionNumberAsc();
+        List<Status> allStatus = statusRepository.findAll();
+        if (positionType.equals("active")) {
+            newStatus.setIsActivePositionNumber(activeStatuses.size()+1);
+            newStatus.setIsNotActivePositionNumber(null);
+        } else {
+            newStatus.setIsActivePositionNumber(null);
+            newStatus.setIsNotActivePositionNumber(allStatus.size()- activeStatuses.size()+1);
+        }
+
+        statusRepository.save(newStatus);
+        return "redirect:/";
+    }
+
 
 
 
