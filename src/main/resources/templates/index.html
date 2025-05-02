@@ -358,6 +358,11 @@
                                     <i class="fas fa-users me-2"></i> Manage Users
                                 </a>
                             </div>
+                            <div th:if="${@userService.hasMaintainerRole(user) or @userService.hasAdminRole(user)}">
+                                <a href="/admin/statuses" class="dropdown-item">
+                                    <i class="fas fa-users me-2"></i> Manage Orders
+                                </a>
+                            </div>
                             <a href="/profile" class="dropdown-item">
                                 <i class="fas fa-user-cog me-2"></i> My Profile
                             </a>

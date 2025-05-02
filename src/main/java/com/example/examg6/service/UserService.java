@@ -103,4 +103,7 @@ public class UserService {
     public boolean hasAdminRole(User user) {
         return user.getRoles().stream().anyMatch(r -> "ADMIN".equals(r.getName()));
     }
+    public boolean hasMaintainerRole(User user) {
+        return user.getRoles().stream().anyMatch(r -> "MAINTAINER".equals(r.getName()));
+    }
 }

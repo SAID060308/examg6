@@ -10,6 +10,7 @@ import java.util.List;
 
 public interface StatusRepository extends JpaRepository<Status, Integer> {
     List<Status> findByIsActivePositionNumberNotNullOrderByIsActivePositionNumberAsc();
+    List<Status> findByIsNotActivePositionNumberNotNullOrderByIsNotActivePositionNumberAsc();
 
     Status findByIsActivePositionNumber(Integer positionNumber);
 
