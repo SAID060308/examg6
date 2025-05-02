@@ -30,7 +30,11 @@ public class TaskService {
     public void save(TaskDto dto, MultipartFile file) throws IOException {
         Task task = new Task();
         task.setTitle(dto.getTitle());
-        task.setUser(userRepository.findById(dto.getUserId()).orElse(null));
+        if (dto.getUserId() != null) {
+            task.setUser(userRepository.findById(dto.getUserId()).orElse(null));
+        }else {
+            task.setUser(null);
+        }
         task.setStatus(statusRepository.findById(dto.getStatusId()).orElse(null));
 
         if (file != null && !file.isEmpty()) {

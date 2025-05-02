@@ -36,9 +36,11 @@
         <div class="mb-3">
             <label class="form-label">User</label>
             <select class="form-select" th:field="*{userId}">
+                <option value="" selected>Choose user</option>
                 <option th:each="user : ${users}" th:value="${user.id}" th:text="${user.username}"></option>
             </select>
         </div>
+
 
         <div class="mb-3">
             <label class="form-label">Status</label>
