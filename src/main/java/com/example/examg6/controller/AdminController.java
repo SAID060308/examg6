@@ -1,14 +1,16 @@
 package com.example.examg6.controller;
 
 import com.example.examg6.entity.Status;
-import com.example.examg6.repo.StatusRepository;
+import com.example.examg6.entity.Task;
+import com.example.examg6.entity.attachment.Attachment;
+import com.example.examg6.entity.attachment.AttachmentContent;
+import com.example.examg6.repo.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,9 +20,17 @@ public class AdminController {
 
 
     private final StatusRepository statusRepository;
+    private final TaskRepository taskRepository;
+    private final UserRepository userRepository;
+    private final AttachmentRepository attachmentRepository;
+    private final AttachmentContentRepository attachmentContentRepository;
 
-    public AdminController(StatusRepository statusRepository) {
+    public AdminController(StatusRepository statusRepository, TaskRepository taskRepository, UserRepository userRepository, AttachmentRepository attachmentRepository, AttachmentContentRepository attachmentContentRepository) {
         this.statusRepository = statusRepository;
+        this.taskRepository = taskRepository;
+        this.userRepository = userRepository;
+        this.attachmentRepository = attachmentRepository;
+        this.attachmentContentRepository = attachmentContentRepository;
     }
 
     @GetMapping("/statuses")
@@ -84,6 +94,51 @@ public class AdminController {
                 }
             }
         }
+
+        return "redirect:/";
+    }
+
+    @GetMapping("/task/edit/{id}")
+    public String editTask(@PathVariable Long id, Model model) {
+        Task task = taskRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Task not found"));
+
+
+        model.addAttribute("task_id", id);
+        model.addAttribute("users", userRepository.findAll());
+        model.addAttribute("statuses", statusRepository.findAll());
+        model.addAttribute("task", task);
+
+        return "task-edit";
+    }
+
+    @PostMapping("/task/update/{id}")
+    public String updateTask(@PathVariable Long id,
+                             @ModelAttribute Task task,
+                             @RequestParam("file") MultipartFile file) throws IOException {
+        // 1. Eski taskni topish
+        Task existingTask = taskRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Task not found"));
+
+        existingTask.setTitle(task.getTitle());
+        existingTask.setUser(task.getUser());
+        existingTask.setStatus(task.getStatus());
+
+        if (file != null && !file.isEmpty() ) {
+            Attachment attachment = new Attachment();
+            attachment.setFileName(file.getOriginalFilename());
+            attachment.setContentType(file.getContentType());
+            attachmentRepository.save(attachment);
+
+            AttachmentContent content = new AttachmentContent();
+            content.setAttachment(attachment);
+            content.setContent(file.getBytes());
+            attachmentContentRepository.save(content);
+
+            existingTask.setAttachment(attachment);
+        }
+
+        taskRepository.save(existingTask);
 
         return "redirect:/";
     }

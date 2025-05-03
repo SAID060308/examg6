@@ -419,9 +419,11 @@
                     </div>
 
                     <div class="task-actions">
-                        <button class="btn btn-edit">
-                            <i class="fas fa-pencil-alt"></i> Edit
-                        </button>
+                        <form th:if = "${@userService.hasMaintainerRole(user) or @userService.hasAdminRole(user)}" th:action="'/admin/task/edit/' + ${task.id}" method = "get">
+                            <button class="btn btn-edit">
+                                <i class="fas fa-pencil-alt"></i> Edit
+                            </button>
+                        </form>
                         <button>
                             <a th:href="@{/comments/show/{id}(id=${task.id})}" class="btn btn-sm btn-info"><i
                                     class="bi bi-chat"></i></a>

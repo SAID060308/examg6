@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Task</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<style>
+    .back-button {
+        display: inline-block;
+        padding: 10px 20px;
+        font-size: 16px;
+        color: white;
+        background-color: #4CAF50;
+        border: none;
+        border-radius: 5px;
+        text-decoration: none;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+    .back-button:hover {
+        background-color: #45a049;
+    }
+</style>
+<div class="container mt-5">
+    <a href="javascript:history.back()" class="back-button">← Back</a>
+    <h2>Edit Task</h2>
+    <form th:action="@{/task/update/{id}(id=${task.id})}" th:object="${task}" method="post" enctype="multipart/form-data">
+        <input type="hidden" th:field="*{id}">
+
+        <div class="mb-3">
+            <label class="form-label">Title</label>
+            <input type="text" class="form-control" th:field="*{title}" required>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">User</label>
+            <select class="form-select" th:field="*{user.id}">
+                <option th:each="user : ${users}"
+                        th:value="${user.id}"
+                        th:selected="${user.id == task.user?.id}"
+                        th:text="${user.username}">
+                </option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Status</label>
+            <select class="form-select" th:field="*{status.id}">
+                <option th:each="status : ${statuses}"
+                        th:value="${status.id}"
+                        th:selected="${status.id == task.status?.id}"
+                        th:text="${status.status}">
+                </option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Attachment (Rasm)</label>
+            <div>
+                <img id="preview"
+                     th:src="${task.attachment != null} ? '/api/attachments/' + ${task.attachment.id} : ''"
+                     class="user-img"
+                     style="max-width: 200px; display: block; border: 1px solid #ccc; padding: 5px; margin-bottom: 5px;">
+                <p id="noImageText"
+                   th:if="${task.attachment == null}"
+                   style="color: gray;">Rasm yo‘q</p>
+            </div>
+
+            <input type="file" class="form-control mt-2" name="file" onchange="previewFile(event)">
+        </div>
+
+        <button type="submit" class="btn btn-primary">Update Task</button>
+    </form>
+</div>
+<script>
+    const fileInput = document.querySelector('input[name="file"]');
+    const previewImg = document.getElementById('preview');
+
+    fileInput.addEventListener('change', function () {
+        const file = this.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                previewImg.src = e.target.result;
+                previewImg.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+</script>
+
+</body>
+</html>

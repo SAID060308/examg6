@@ -3,9 +3,10 @@ package com.example.examg6.controller;
 import com.example.examg6.dto.TaskDto;
 import com.example.examg6.entity.Status;
 import com.example.examg6.entity.Task;
-import com.example.examg6.repo.StatusRepository;
-import com.example.examg6.repo.TaskRepository;
-import com.example.examg6.repo.UserRepository;
+import com.example.examg6.entity.User;
+import com.example.examg6.entity.attachment.Attachment;
+import com.example.examg6.entity.attachment.AttachmentContent;
+import com.example.examg6.repo.*;
 import com.example.examg6.service.TaskService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -22,11 +23,16 @@ public class TaskController {
     private final StatusRepository statusRepository;
     private final UserRepository userRepository;
     private final TaskService taskService;
-    public TaskController(TaskRepository taskRepository, StatusRepository statusRepository, UserRepository userRepository, TaskService taskService) {
+    private final AttachmentRepository attachmentRepository;
+    private final AttachmentContentRepository attachmentContentRepository;
+
+    public TaskController(TaskRepository taskRepository, StatusRepository statusRepository, UserRepository userRepository, TaskService taskService, AttachmentRepository attachmentRepository, AttachmentContentRepository attachmentContentRepository) {
         this.taskRepository = taskRepository;
         this.statusRepository = statusRepository;
         this.userRepository = userRepository;
         this.taskService = taskService;
+        this.attachmentRepository = attachmentRepository;
+        this.attachmentContentRepository = attachmentContentRepository;
     }
 
     @GetMapping("/task/add")
@@ -63,6 +69,7 @@ public class TaskController {
             newStatus.setIsActivePositionNumber(null);
             newStatus.setIsNotActivePositionNumber(allStatus.size()- activeStatuses.size()+1);
         }
+
 
         statusRepository.save(newStatus);
         return "redirect:/";
@@ -112,6 +119,5 @@ public class TaskController {
 
         return "redirect:/";
     }
-
 
 }
