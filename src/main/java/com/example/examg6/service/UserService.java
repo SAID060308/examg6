@@ -8,6 +8,7 @@ import com.example.examg6.repo.AttachmentContentRepository;
 import com.example.examg6.repo.AttachmentRepository;
 import com.example.examg6.repo.RoleRepository;
 import com.example.examg6.repo.UserRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
@@ -15,6 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
 import java.util.Optional;
@@ -90,6 +92,7 @@ public class UserService {
         return "Ro'yxatdan o'tdingiz! Email tasdiqlash kod yuborildi.";
     }
 
+
     public String verifyUser(String code) {
         Optional<User> optionalUser = userRepository.findByVerifiedCode(code);
         if (optionalUser.isPresent()) {
@@ -105,5 +108,39 @@ public class UserService {
     }
     public boolean hasMaintainerRole(User user) {
         return user.getRoles().stream().anyMatch(r -> "MAINTAINER".equals(r.getName()));
+    }
+
+    @Transactional
+    public void updateUserProfile(String email, String username, MultipartFile file) throws IOException {
+        Optional<User> optionalUser = userRepository.findByEmail(email);
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            user.setUsername(username);
+
+            if (file != null && !file.isEmpty()) {
+                updateUserProfilePicture(user, file);
+            }
+
+            userRepository.save(user);
+        }
+    }
+
+    private void updateUserProfilePicture(User user, MultipartFile file) throws IOException, IOException {
+        if (user.getAttachment() != null && !"default.jpg".equals(user.getAttachment().getFileName())) {
+            attachmentContentRepository.deleteByAttachmentId(user.getAttachment().getId());
+            attachmentRepository.delete(user.getAttachment());
+        }
+
+        Attachment attachment = new Attachment();
+        attachment.setFileName(file.getOriginalFilename());
+        attachment.setContentType(file.getContentType());
+        attachmentRepository.save(attachment);
+
+        AttachmentContent content = new AttachmentContent();
+        content.setAttachment(attachment);
+        content.setContent(file.getBytes());
+        attachmentContentRepository.save(content);
+
+        user.setAttachment(attachment);
     }
 }
