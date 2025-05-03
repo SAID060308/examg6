@@ -58,6 +58,7 @@ public class UserService {
                 .orElseGet(() -> roleRepository.save(new Role(null, "PROGRAMMER")));
         user.setRoles(Collections.singletonList(role));
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setActive(true);
         // Save photo
         if (file != null && !file.isEmpty()) {
             try {

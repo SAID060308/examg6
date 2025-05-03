@@ -28,6 +28,7 @@ public class User  {
     private String username;
     private String email;
     private String password;
+    private Boolean active;
     @ManyToMany(fetch = FetchType.EAGER)
     List<Role> roles;
     @ManyToOne(fetch = FetchType.EAGER)
@@ -35,5 +36,4 @@ public class User  {
     @Transient
     @Column(name = "verified_code")
     private String verifiedCode;
-
 }
