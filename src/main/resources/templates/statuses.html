@@ -68,6 +68,22 @@
             justify-content: center;
             margin-top: 20px;
         }
+        .back-button {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 16px;
+            color: white;
+            background-color: #4CAF50;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .back-button:hover {
+            background-color: #45a049;
+        }
     </style>
 </head>
 <body>
@@ -131,6 +147,9 @@
 
             <button id="saveOrderBtn" type="submit" class="btn btn-primary px-4 py-2 mt-4">
                 <i class="bi bi-save"></i> Save Order
+            </button>
+            <button class="btn btn-back py-2 mt-4">
+                <a href="/" class="back-button">← Back</a>
             </button>
         </form>
     </div>
