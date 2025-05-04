@@ -70,7 +70,7 @@
                 <div class="d-flex justify-content-between">
                     <div>
                         <img th:if="${comment.user != null}"
-                             th:src="@{'/api/attachments/' + ${task.user.attachment.id}}"
+                             th:src="@{'/api/attachments/' + ${comment.user.attachment.id}}"
                              alt="User Image"
                              class="rounded-circle me-2"
                              style="width: 40px; height: 40px; object-fit: cover;">
