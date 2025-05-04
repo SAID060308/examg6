@@ -379,7 +379,8 @@
                     </div>
 
                     <!-- Task Management Buttons -->
-                    <div class="nav-buttons ms-3 ">
+                    <div class="nav-buttons ms-3"
+                         th:if="${@userService.hasAdminRole(user) or @userService.hasMaintainerRole(user)}">
                         <a href="/task/add" class="btn btn-accent me-2">
                             <i class="fas fa-plus me-1"></i> Create Task
                         </a>

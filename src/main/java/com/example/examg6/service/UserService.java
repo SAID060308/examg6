@@ -110,6 +110,9 @@ public class UserService {
     public boolean hasMaintainerRole(User user) {
         return user.getRoles().stream().anyMatch(r -> "MAINTAINER".equals(r.getName()));
     }
+    public boolean hasProgrammerRole(User user) {
+        return user.getRoles().stream().anyMatch(r -> "PROGRAMMER".equals(r.getName()));
+    }
 
     @Transactional
     public void updateUserProfile(String email, String username, MultipartFile file) throws IOException {
