@@ -43,8 +43,7 @@
                  alt="User Image"
                  class="rounded-circle me-2"
                  style="width: 40px; height: 40px; object-fit: cover;">
-            <strong th:text="${task.user.username}">User Name</strong>
-
+            <strong th:if="${task.user != null}" th:text="${task.user.username}">User Name</strong>
         </div>
     </div>
 
